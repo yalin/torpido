@@ -1,0 +1,11 @@
+{
+  "name": "torpido2ndGen",
+  "version": "1.0.0",
+  "description": "O Teoman 'i torpidoya sokarim!",
+  "main": "torpido.js",
+  "author": "etsw",
+  "dependencies": {
+    "discord.io": "github:Woor/discord.io#gateway_v6",
+    "winston": "^3.2.1"
+  }
+}
