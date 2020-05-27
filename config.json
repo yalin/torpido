@@ -1,6 +1,0 @@
-{
-    "prefix": "!",
-    "discordAPIToken": "your_discord_api_token",
-    "voiceChannelID": "voice_channel_id",
-    "youtubeAPIKey": "your_youtube_api_key"
-}
