@@ -1,11 +1,18 @@
 {
   "name": "torpido2ndGen",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "O Teoman 'i torpidoya sokarim!",
   "main": "torpido.js",
   "author": "etsw",
   "dependencies": {
-    "discord.io": "github:Woor/discord.io#gateway_v6",
-    "winston": "^3.2.1"
+    "@discordjs/opus": "^0.3.2",
+    "bufferutil": "^4.0.1",
+    "discord.js": "^12.2.0",
+    "erlpack": "github:discordapp/erlpack",
+    "ffmpeg-static": "^4.2.2",
+    "libsodium-wrappers": "^0.7.6",
+    "winston": "^3.2.1",
+    "youtube-search": "^1.1.4",
+    "ytdl-core": "^2.1.5"
   }
 }

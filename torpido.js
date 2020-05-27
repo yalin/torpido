@@ -1,47 +1,76 @@
-var Discord = require('discord.io');
-var logger = require('winston');
-var auth = require('./auth.json');
+const Discord = require('discord.js');
+const ytdl = require('ytdl-core');
+var youtubeSearch = require('youtube-search');
 
-// Configure logger settings
-logger.remove(logger.transports.Console);
-logger.add(new logger.transports.Console, {
-    colorize: true
+var config = require('./config.json');
+
+const client = new Discord.Client();
+
+client.on('ready', () => {
+    console.log(`Logged in as ${client.user.tag}!`);
 });
-logger.level = 'debug';
-// Initialize Discord Bot
-var bot = new Discord.Client({
-    token: auth.token,
-    autorun: true
-});
-console.log('bot :', bot);
 
-try {
-    bot.on('ready', function (evt) {
-        logger.info('Connected');
-        logger.info('Logged in as: ');
-        logger.info(bot.username + ' - (' + bot.id + ')');
-    });
-} catch (err) {
-
-    console.log('err.message :', err.message);
-}
-bot.on('message', function (user, userID, channelID, message, evt) {
-    // Our bot needs to know if it will execute a command
-    // It will listen for messages that will start with `!`
-    if (message.substring(0, 1) == '!') {
-        var args = message.substring(1).split(' ');
+client.on('message', msg => {
+    if (msg.content[0] == config.prefix) {
+        var args = msg.content.substring(1).split(' ');
         var cmd = args[0];
-
-        args = args.splice(1);
+        var rest = args.splice(1);
         switch (cmd) {
-            // !ping
             case 'ping':
-                bot.sendMessage({
-                    to: channelID,
-                    message: 'Pong!'
+                msg.reply('O Teoman\'i torpidoya sokarim!');
+                break;
+            case 'voice':
+                if (rest[0] == 'join') {
+                    const voiceChannel = msg.member.voice.channel
+                    voiceChannel.join()
+                } else if (rest[0] == 'leave') {
+                    const voiceChannel = msg.member.voice.channel
+                    voiceChannel.leave()
+                } else {
+                    msg.reply('komutun devami eksik?')
+                }
+                break;
+            case 'play':
+                if (msg.channel.type !== 'text') return;
+                if (!rest[0]) {
+                    msg.reply(' ne calayim ? - !play {youtube-link}')
+                }
+                const voiceChannel = msg.member.voice.channel;
+                if (!voiceChannel) {
+                    return msg.reply('please join a voice channel first!');
+                }
+                voiceChannel.join().then(connection => {
+                    const stream = ytdl(args[0], {
+                        filter: 'audioonly'
+                    });
+                    const dispatcher = connection.play(stream);
+                    console.log('stream :', stream);
+                    console.log('dispatcher :', dispatcher);
+
+                    dispatcher.on('end', () => voiceChannel.leave());
                 });
                 break;
-                // Just add any case commands if you want to..
+
+            case 'yt':
+                var opts = {
+                    maxResults: 1,
+                    key: config.youtubeAPIKey,
+                    type: 'video'
+                };
+                var ytSearchKey = rest.join(' ')
+                youtubeSearch(ytSearchKey, opts, function (err, results) {
+                    if (err) return console.log(err);
+                    msg.reply(results[0]['link'])
+                });
+                break;
+
+            case 'g':
+                break;
+
+            default:
+                break;
         }
     }
 });
+
+client.login(config.discordAPIToken);
