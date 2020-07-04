@@ -278,8 +278,8 @@ client.on('message', msg => {
 // })
 
 client.on('voiceStateUpdate', (oldState, newState) => {
-    let newUserChannel = newMember.voiceChannel
-    let oldUserChannel = oldMember.voiceChannel
+    let newUserChannel = newState.voiceChannel
+    let oldUserChannel = oldState.voiceChannel
 
     if (oldUserChannel === undefined && newUserChannel !== undefined) {
         // user enters the voice channel
