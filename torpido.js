@@ -45,7 +45,7 @@ function exitChannel(username) {
     }
     var vConnection = client.voice.connections.first()
     if (vConnection) {
-        googleTTS(username + cfg.discord.consts.exit, cfg.consts.speechlang, cfg.consts.speechspeed)
+        googleTTS(username + cfg.consts.exit, cfg.consts.speechlang, cfg.consts.speechspeed)
             .then(function (url) {
                 ytdispatcher = vConnection.play(url);
             })
