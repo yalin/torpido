@@ -1,26 +1,79 @@
-## torpido
+# torpido
 
-torpido is a discord bot attribute to [peterloorke](https://github.com/egemenyildiz). The first generation created as an IRC bot at irc.freenode.org #sourberry
+torpido is a discord bot attribute to [peterloorke](https://github.com/egemenyildiz). The first generation created as an IRC bot at irc.freenode.org #sourberry<br>
 This is the second generation and improved version of torpido.
 
-torpido uses [discord.js](https://discord.js.org/).
+torpido uses [discord.js](https://discord.js.org/)
 
-#### commands:
+There are three channels defined;<br>
+* text channel : gets text commands
+* voice channel : any kind of voice interactions done by this channel
+* log channel : optional, it keeps the records for who entered and exit the voice channel
+
+---
+## prerequisites
+[ffmpeg](http://ffmpeg.org/) needs to be installed for voice channel playback.
+
+for linux:
+>sudo apt-get install ffmpeg
+
+for windows:
+>npm install ffmpeg-static --save
+
+
+---
+## commands
 
 ```
-!yt keywords
-Youtube search command. Example; !yt murat ovuc
+!join
+Joins to pre-defined discord voice channel
+
+!leave
+Leaves from voice channel
+
+!ping
+ping-pong
+
+!teoman
+O Teoman'i var ya..
+
 ```
 
-### config
+```
+!yt {keyword(s)}
+Youtube search command.
+i.e : !yt murat ovuc
 
-You need to create _config.json_ file to compile.
+!play {youtube_url}
+Plays the audio of given youtube video url
+i.e : !play https://youtu.be/OWGvkzH2vH8
+
+!play {keyword}
+Searches youtube then plays the first video
+i.e : !play murat ovuc dalga dalga
+
+!stop
+Stops whatever is playing right now
+```
+
+
+---
+## config
+
+You need to create `config.json` file to compile.
 
 ```
 {
     "prefix": "!",
-    "discordAPIToken": "your_discord_api_token",
-    "voiceChannelID": "voice_channel_id",
-    "youtubeAPIKey": "your_youtube_api_key"
+    "youtube": {
+        "key": "your_youtube_api_key"
+    },
+    "discord": {
+        "token": "your_discord_api_token",
+        "channels": {
+            "text": "text_channel_id",
+            "voice": "voice_channel_id",
+            "log": "log_channel_id"
+    }
 }
 ```
