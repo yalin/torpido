@@ -1,26 +1,59 @@
 const Discord = require('discord.js');
 const ytdl = require('ytdl-core');
 var youtubeSearch = require('youtube-search');
+var googleTTS = require('google-tts-api');
 
-var config = require('./config.json');
+var cfg = require('./config.json');
 
 const client = new Discord.Client();
 const guild = new Discord.Guild(client);
 const voiceChannel = new Discord.VoiceChannel(guild, {
-    id: config.discord.channels.voice
+    id: cfg.discord.channels.voice
 });
 const textChannel = new Discord.TextChannel(guild, {
-    id: config.discord.channels.text
+    id: cfg.discord.channels.text
 });
 const logChannel = new Discord.TextChannel(guild, {
-    id: config.discord.channels.log
+    id: cfg.discord.channels.log
 });
 
 // Youtube dispatcher
 let ytdispatcher;
 
-// Optional decisions
-var leaveAfterPlay = true;
+
+// functions
+function enteredChannel(username) {
+    if (username == 'etsw') {
+        // personal thingy
+        username = 'etsv'
+    }
+    var vConnection = client.voice.connections.first()
+    if (vConnection) {
+        googleTTS(username + cfg.consts.entered, cfg.consts.speechlang, cfg.consts.speechspeed)
+            .then(function (url) {
+                ytdispatcher = vConnection.play(url);
+            })
+            .catch(function (err) {
+                console.error(err.stack);
+            });
+    }
+}
+
+function exitChannel(username) {
+    if (username == 'etsw') {
+        username = 'etsv'
+    }
+    var vConnection = client.voice.connections.first()
+    if (vConnection) {
+        googleTTS(username + cfg.discord.consts.exit, cfg.consts.speechlang, cfg.consts.speechspeed)
+            .then(function (url) {
+                ytdispatcher = vConnection.play(url);
+            })
+            .catch(function (err) {
+                console.error(err.stack);
+            });
+    }
+}
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
@@ -28,9 +61,9 @@ client.on('ready', () => {
 
 client.on('message', msg => {
     // checks if the command came from text channel
-    if (msg.channel.id != config.discord.channels.text) return;
+    if (msg.channel.id != cfg.discord.channels.text) return;
 
-    if (msg.content[0] == config.prefix) {
+    if (msg.content[0] == cfg.prefix) {
 
         var args = msg.content.substring(1).split(' ');
         var cmd = args[0];
@@ -44,11 +77,11 @@ client.on('message', msg => {
             case 'join':
                 voiceChannel.fetch().then(vc => {
                     vc.join().then(connection => {
-                            console.log("\n", connection.channel);
-                            connection.on('speaking', user => {
-                                console.log('============================')
-                                console.log('konusan :', user);
-                            })
+                            // console.log("\n", connection.channel);
+                            // connection.on('speaking', user => {
+                            //     console.log('============================')
+                            //     console.log('konusan :', user);
+                            // })
                         })
                         .catch(console.error);
                 })
@@ -97,7 +130,7 @@ client.on('message', msg => {
 
                             ytdispatcher = connection.play(stream);
 
-                            if (leaveAfterPlay) {
+                            if (cfg.consts.leaveafterplay) {
                                 ytdispatcher.on('finish', () =>
                                     voiceChannel.fetch().then(vc => {
                                         vc.leave()
@@ -112,7 +145,7 @@ client.on('message', msg => {
                 } else {
                     var opts = {
                         maxResults: 1,
-                        key: config.youtube.key,
+                        key: cfg.youtube.key,
                         type: 'video'
                     };
                     var ytSearchKey = rest.join(' ')
@@ -129,7 +162,7 @@ client.on('message', msg => {
 
                                 ytdispatcher = connection.play(stream);
 
-                                if (leaveAfterPlay) {
+                                if (cfg.consts.leaveafterplay) {
                                     ytdispatcher.on('finish', () =>
                                         voiceChannel.fetch().then(vc => {
                                             vc.leave()
@@ -162,7 +195,7 @@ client.on('message', msg => {
 
                         ytdispatcher = connection.play(stream);
 
-                        if (leaveAfterPlay) {
+                        if (cfg.consts.leaveafterplay) {
                             ytdispatcher.on('finish', () =>
                                 voiceChannel.fetch().then(vc => {
                                     vc.leave()
@@ -181,7 +214,7 @@ client.on('message', msg => {
                 }
                 var opts = {
                     maxResults: 1,
-                    key: config.youtube.key,
+                    key: cfg.youtube.key,
                     type: 'video'
                 };
                 var ytSearchKey = rest.join(' ')
@@ -212,6 +245,7 @@ client.on('voiceStateUpdate', (oldState, newState) => {
                     id: oldState.id
                 })
                 u.fetch().then(info => {
+                    exitChannel(info.username)
                     logChannel.send('"' + info.username + '"' + ' left channel.')
                 })
             } else {
@@ -220,6 +254,7 @@ client.on('voiceStateUpdate', (oldState, newState) => {
                     id: oldState.id
                 })
                 u.fetch().then(info => {
+                    enteredChannel(info.username)
                     logChannel.send('"' + info.username + '"' + ' entered channel.')
                 })
             }
@@ -227,4 +262,4 @@ client.on('voiceStateUpdate', (oldState, newState) => {
     }
 })
 
-client.login(config.discord.token);
+client.login(cfg.discord.token);
