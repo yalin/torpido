@@ -248,59 +248,33 @@ client.on('message', msg => {
     }
 });
 
-// client.on('voiceStateUpdate', (oldState, newState) => {
-//     // write to log channel if only user entered or left a specific voice channel
-//     var _stateChannel = oldState.channelID == undefined ? newState.channelID : oldState.channelID
-
-//     if (_stateChannel == voiceChannel.id) {
-//         if (oldState.channelID != newState.channelID) {
-//             if (newState.channelID == null) {
-//                 // user leaves the voice channel
-//                 var u = new Discord.User(client, {
-//                     id: oldState.id
-//                 })
-//                 u.fetch().then(info => {
-//                     exitChannel(info.username)
-//                     logChannel.send('"' + info.username + '"' + ' left channel.')
-//                 })
-//             } else {
-//                 // user enters the voice channel
-//                 var u = new Discord.User(client, {
-//                     id: oldState.id
-//                 })
-//                 u.fetch().then(info => {
-//                     enteredChannel(info.username)
-//                     logChannel.send('"' + info.username + '"' + ' entered channel.')
-//                 })
-//             }
-//         }
-//     }
-// })
-
 client.on('voiceStateUpdate', (oldState, newState) => {
-    let newUserChannel = newState.voiceChannel
-    let oldUserChannel = oldState.voiceChannel
+    // write to log channel if only user entered or left a specific voice channel
+    var _stateChannel = oldState.channelID == undefined ? newState.channelID : oldState.channelID
 
-    if (oldUserChannel === undefined && newUserChannel !== undefined) {
-        // user enters the voice channel
-        var u = new Discord.User(client, {
-            id: newState.id
-        })
-        u.fetch().then(info => {
-            enteredChannel(info.username)
-            logChannel.send('"' + info.username + '"' + ' entered channel.')
-        }).catch(console.error)
-    } else if (newUserChannel === undefined) {
-        // user leaves the voice channel
-        var u = new Discord.User(client, {
-            id: oldState.id
-        })
-        u.fetch().then(info => {
-            exitChannel(info.username)
-            logChannel.send('"' + info.username + '"' + ' left channel.')
-        }).catch(console.error)
+    if (_stateChannel == voiceChannel.id) {
+        if (oldState.channelID != newState.channelID) {
+            if (newState.channelID == null) {
+                // user leaves the voice channel
+                var u = new Discord.User(client, {
+                    id: oldState.id
+                })
+                u.fetch().then(info => {
+                    exitChannel(info.username)
+                    logChannel.send('"' + info.username + '"' + ' left channel.')
+                })
+            } else {
+                // user enters the voice channel
+                var u = new Discord.User(client, {
+                    id: oldState.id
+                })
+                u.fetch().then(info => {
+                    enteredChannel(info.username)
+                    logChannel.send('"' + info.username + '"' + ' entered channel.')
+                })
+            }
+        }
     }
-
 })
 
 client.login(cfg.discord.token);
