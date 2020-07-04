@@ -62,8 +62,8 @@ client.on('message', msg => {
                 break;
 
             case 'hash':
+                // will fix next commit
                 voiceChannel.fetch().then(vc => {
-                        // will fix next commit
                         var memberss = vc.members
                         memberss.forEach(element => {
                             console.log("member :", element.user.username);
