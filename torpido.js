@@ -289,7 +289,7 @@ client.on('voiceStateUpdate', (oldState, newState) => {
         u.fetch().then(info => {
             enteredChannel(info.username)
             logChannel.send('"' + info.username + '"' + ' entered channel.')
-        })
+        }).catch(console.error)
     } else if (newUserChannel === undefined) {
         // user leaves the voice channel
         var u = new Discord.User(client, {
@@ -298,7 +298,7 @@ client.on('voiceStateUpdate', (oldState, newState) => {
         u.fetch().then(info => {
             exitChannel(info.username)
             logChannel.send('"' + info.username + '"' + ' left channel.')
-        })
+        }).catch(console.error)
     }
 
 })
