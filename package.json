@@ -1,9 +1,9 @@
 {
   "name": "torpido",
-  "version": "1.0.2",
-  "description": "O Teoman 'i torpidoya sokarim!",
+  "version": "1.0.3",
+  "description": "A magnificent discord bot with voice features.",
   "main": "torpido.js",
-  "author": "etsw",
+  "author": "yalin",
   "dependencies": {
     "@discordjs/opus": "^0.3.2",
     "bufferutil": "^4.0.1",

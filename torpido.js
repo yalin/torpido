@@ -1,9 +1,12 @@
+const fs = require('fs');
 const Discord = require('discord.js');
 const ytdl = require('ytdl-core');
 var youtubeSearch = require('youtube-search');
 var googleTTS = require('google-tts-api');
 
 var cfg = require('./config.json');
+var msgs = require('./text/msgs.json')
+var voice = require('./voice/voice.js')
 
 const client = new Discord.Client();
 const guild = new Discord.Guild(client);
@@ -18,8 +21,11 @@ const logChannel = new Discord.TextChannel(guild, {
 });
 
 // Youtube dispatcher
-let ytdispatcher;
+let ytdispatcher = Discord.StreamDispatcher;
 
+// volume
+let _musicVolume = 0.1
+let _announceVolume = 1
 
 // functions
 function enteredChannel(username) {
@@ -27,11 +33,13 @@ function enteredChannel(username) {
         // personal thingy
         username = 'etsv'
     }
-    var vConnection = client.voice.connections.first()
+    var vConnection = voice.GetVoiceConnection(client, voiceChannel.id)
     if (vConnection) {
         googleTTS(username + cfg.consts.entered, cfg.consts.speechlang, cfg.consts.speechspeed)
             .then(function (url) {
-                ytdispatcher = vConnection.play(url);
+                ytdispatcher = vConnection.play(url, {
+                    volume: _announceVolume
+                });
             })
             .catch(function (err) {
                 console.error(err.stack);
@@ -43,11 +51,13 @@ function exitChannel(username) {
     if (username == 'etsw') {
         username = 'etsv'
     }
-    var vConnection = client.voice.connections.first()
+    var vConnection = voice.GetVoiceConnection(client, voiceChannel.id)
     if (vConnection) {
         googleTTS(username + cfg.consts.exit, cfg.consts.speechlang, cfg.consts.speechspeed)
             .then(function (url) {
-                ytdispatcher = vConnection.play(url);
+                ytdispatcher = vConnection.play(url, {
+                    volume: _announceVolume
+                });
             })
             .catch(function (err) {
                 console.error(err.stack);
@@ -58,7 +68,7 @@ function exitChannel(username) {
 function checkifPersonInVoiceChannel(msg) {
     var vc = msg.member.voice.channel;
     if (!vc) {
-        msg.reply('you need to be in voice channel first!');
+        msg.reply(msgs.notinchannel);
         return
     }
 
@@ -68,6 +78,7 @@ client.on('ready', () => {
 });
 
 client.on('message', msg => {
+
     // checks if the command came from text channel
     if (msg.channel.id != cfg.discord.channels.text) return;
 
@@ -80,6 +91,12 @@ client.on('message', msg => {
         switch (cmd) {
             case 'ping':
                 msg.reply('O Teoman\'i torpidoya sokarim!');
+                break;
+
+            case 'help':
+                fs.readFile('help.md', 'utf8', (err, data) => {
+                    msg.reply(data)
+                });
                 break;
 
             case 'join':
@@ -121,22 +138,23 @@ client.on('message', msg => {
 
             case 'play':
                 if (!rest[0]) {
-                    msg.reply(' what to play ? - !play {youtube-link} - !play {keywords}')
-                    return;
+                    return msg.reply(' what to play ? - !play {youtube-link} - !play {keywords}')
                 }
                 var vc = msg.member.voice.channel;
                 if (!vc) {
-                    return msg.reply('you need to be in voice channel first!');
+                    return msg.reply(msgs.notinchannel);
                 }
 
-                if (rest[0].startsWith('https://you')) {
+                if (rest[0].startsWith('https://www.you')) {
 
                     vc.join().then(connection => {
                             const stream = ytdl(rest[0], {
                                 filter: 'audioonly',
                             });
 
-                            ytdispatcher = connection.play(stream);
+                            ytdispatcher = connection.play(stream, {
+                                volume: _musicVolume
+                            });
 
                             if (cfg.consts.leaveafterplay) {
                                 ytdispatcher.on('finish', () =>
@@ -168,7 +186,9 @@ client.on('message', msg => {
                                     filter: 'audioonly',
                                 });
 
-                                ytdispatcher = connection.play(stream);
+                                ytdispatcher = connection.play(stream, {
+                                    volume: _musicVolume
+                                });
 
                                 if (cfg.consts.leaveafterplay) {
                                     ytdispatcher.on('finish', () =>
@@ -187,13 +207,14 @@ client.on('message', msg => {
                 break;
 
             case 'stop':
-                ytdispatcher.destroy()
+                if (ytdispatcher)
+                    ytdispatcher.destroy()
                 break;
 
             case 'teoman':
                 var vc = msg.member.voice.channel;
                 if (!vc) {
-                    return msg.reply('you need to be in voice channel first!');
+                    return msg.reply(msgs.notinchannel);
                 }
                 vc.join().then(connection => {
 
@@ -201,7 +222,9 @@ client.on('message', msg => {
                             filter: 'audioonly',
                         });
 
-                        ytdispatcher = connection.play(stream);
+                        ytdispatcher = connection.play(stream, {
+                            volume: _musicVolume
+                        });
 
                         if (cfg.consts.leaveafterplay) {
                             ytdispatcher.on('finish', () =>
@@ -217,8 +240,7 @@ client.on('message', msg => {
 
             case 'yt':
                 if (!rest[0]) {
-                    msg.reply('what to search? - !yt {keyword}')
-                    return;
+                    return msg.reply('what to search? - !yt {keyword}')
                 }
                 var opts = {
                     maxResults: 1,
@@ -238,8 +260,38 @@ client.on('message', msg => {
             case 'say':
                 var vc = msg.member.voice.channel;
                 if (!vc) {
-                    return msg.reply('you need to be in voice channel first!');
+                    return msg.reply(msgs.notinchannel);
                 }
+                if (!rest[0]) {
+                    return msg.reply(msgs.saywhat)
+                }
+                var vConnection = voice.GetVoiceConnection(client, voiceChannel.id)
+                if (vConnection) {
+                    googleTTS(rest.join(' '), cfg.consts.speechlang, cfg.consts.speechspeed)
+                        .then(function (url) {
+                            ytdispatcher = vConnection.play(url, {
+                                volume: _announceVolume
+                            });
+                        })
+                        .catch(function (err) {
+                            console.error(err.stack);
+                        });
+                }
+                break;
+
+            case 'vol':
+                var vc = msg.member.voice.channel;
+                if (!vc) {
+                    return msg.reply(msgs.notinchannel);
+                }
+                if (!rest[0]) {
+                    return msg.reply('volume: ' + _musicVolume)
+                }
+                _musicVolume = parseFloat(rest[0])
+                if (ytdispatcher)
+                    ytdispatcher.setVolume(_musicVolume)
+                msg.reply(msgs.volumesetto + _musicVolume)
+
                 break;
 
             default:
@@ -261,7 +313,7 @@ client.on('voiceStateUpdate', (oldState, newState) => {
                 })
                 u.fetch().then(info => {
                     exitChannel(info.username)
-                    logChannel.send('"' + info.username + '"' + ' left channel.')
+                    logChannel.send('"' + info.username + '"' + cfg.consts.exit)
                 })
             } else {
                 // user enters the voice channel
@@ -270,7 +322,7 @@ client.on('voiceStateUpdate', (oldState, newState) => {
                 })
                 u.fetch().then(info => {
                     enteredChannel(info.username)
-                    logChannel.send('"' + info.username + '"' + ' entered channel.')
+                    logChannel.send('"' + info.username + '"' + cfg.consts.entered)
                 })
             }
         }

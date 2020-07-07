@@ -21,6 +21,8 @@ for windows:
 >npm install ffmpeg-static --save
 
 
+sometimes, there is a problem with `node-pre-gyp` then it needs to be installed manually.
+
 ---
 ## commands
 
@@ -54,6 +56,16 @@ i.e : !play murat ovuc dalga dalga
 
 !stop
 Stops whatever is playing right now
+
+!vol
+Tells the current volume
+
+!vol [0-1]
+Sets the volume of the bot
+i.e : !vol 0.2
+
+!say {word(s)}
+Says the given words as voice
 ```
 
 
@@ -74,6 +86,13 @@ You need to create `config.json` file to compile.
             "text": "text_channel_id",
             "voice": "voice_channel_id",
             "log": "log_channel_id"
+    },
+    "consts":{
+        "entered" : " entered channel",
+        "exit" : " exit channel",
+        "speechlang" : "en",
+        "speechspeed" : 1,
+        "leaveafterplay" : false
     }
 }
 ```
