@@ -1,5 +1,9 @@
 {
     "notinchannel": "you need to be in voice channel first!",
     "saywhat" : "say wut?",
-    "volumesetto" : "volume set to: "
+    "volumesetto" : "volume set to: ",
+    "enteredchannel" : " entered channel",
+    "exitchannel" : " exit channel",
+    "languagesetto" : "language set to: ",
+    "nosuchlanguage" : "no such langauge: "
 }
