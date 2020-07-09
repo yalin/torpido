@@ -4,9 +4,9 @@ const ytdl = require('ytdl-core');
 var youtubeSearch = require('youtube-search');
 var googleTTS = require('google-tts-api');
 
-var cfg = require('./config.json');
-var msgs = require('./text/msgs.json')
 var voice = require('./voice/voice.js')
+let cfg = JSON.parse(fs.readFileSync('./config.json', 'utf-8'))
+let msgs = JSON.parse(fs.readFileSync('./text/msgs.json', 'utf-8'))
 
 const client = new Discord.Client();
 const guild = new Discord.Guild(client);
@@ -27,6 +27,10 @@ let ytdispatcher = Discord.StreamDispatcher;
 let _musicVolume = 0.1
 let _announceVolume = 1
 
+// language
+let speechlang = cfg.consts.speechlang
+let languages = require('./text/langs.js').langs
+
 // functions
 function enteredChannel(username) {
     if (username == 'etsw') {
@@ -35,7 +39,7 @@ function enteredChannel(username) {
     }
     var vConnection = voice.GetVoiceConnection(client, voiceChannel.id)
     if (vConnection) {
-        googleTTS(username + cfg.consts.entered, cfg.consts.speechlang, cfg.consts.speechspeed)
+        googleTTS(username + msgs.enteredchannel, speechlang, cfg.consts.speechspeed)
             .then(function (url) {
                 ytdispatcher = vConnection.play(url, {
                     volume: _announceVolume
@@ -53,7 +57,7 @@ function exitChannel(username) {
     }
     var vConnection = voice.GetVoiceConnection(client, voiceChannel.id)
     if (vConnection) {
-        googleTTS(username + cfg.consts.exit, cfg.consts.speechlang, cfg.consts.speechspeed)
+        googleTTS(username + msgs.exitchannel, speechlang, cfg.consts.speechspeed)
             .then(function (url) {
                 ytdispatcher = vConnection.play(url, {
                     volume: _announceVolume
@@ -267,7 +271,7 @@ client.on('message', msg => {
                 }
                 var vConnection = voice.GetVoiceConnection(client, voiceChannel.id)
                 if (vConnection) {
-                    googleTTS(rest.join(' '), cfg.consts.speechlang, cfg.consts.speechspeed)
+                    googleTTS(rest.join(' '), speechlang, cfg.consts.speechspeed)
                         .then(function (url) {
                             ytdispatcher = vConnection.play(url, {
                                 volume: _announceVolume
@@ -294,6 +298,21 @@ client.on('message', msg => {
 
                 break;
 
+            case 'reload':
+                cfg = JSON.parse(fs.readFileSync('./config.json', 'utf-8'))
+                msgs = JSON.parse(fs.readFileSync('./text/msgs.json', 'utf-8'))
+                break;
+
+            case 'lang':
+                var requestedLanguage = rest[0]
+                if (languages.includes(requestedLanguage)) {
+                    speechlang = requestedLanguage
+                    return msg.reply(msgs.languagesetto + requestedLanguage)
+                } else {
+                    return msg.reply(msgs.nosuchlanguage + requestedLanguage)
+                }
+                break;
+
             default:
                 break;
         }
@@ -302,30 +321,38 @@ client.on('message', msg => {
 
 client.on('voiceStateUpdate', (oldState, newState) => {
     // write to log channel if only user entered or left a specific voice channel
-    var _stateChannel = oldState.channelID == undefined ? newState.channelID : oldState.channelID
-
-    if (_stateChannel == voiceChannel.id) {
-        if (oldState.channelID != newState.channelID) {
-            if (newState.channelID == null) {
-                // user leaves the voice channel
+    if (newState.channelID) {
+        if (newState.channelID == cfg.discord.channels.voice && newState.channelID != oldState.channelID) {
+            // user enters the voice channel
+            // bugfix = second condition added to catch only channel diff, not mute or deaf
+            var u = new Discord.User(client, {
+                id: oldState.id
+            })
+            u.fetch().then(info => {
+                enteredChannel(info.username)
+                logChannel.send('"' + info.username + '"' + msgs.enteredchannel)
+            })
+        } else {
+            if (oldState.channelID == cfg.discord.channels.voice) {
+                // user leaves the voice channel and enters another voice channel
                 var u = new Discord.User(client, {
                     id: oldState.id
                 })
                 u.fetch().then(info => {
                     exitChannel(info.username)
-                    logChannel.send('"' + info.username + '"' + cfg.consts.exit)
-                })
-            } else {
-                // user enters the voice channel
-                var u = new Discord.User(client, {
-                    id: oldState.id
-                })
-                u.fetch().then(info => {
-                    enteredChannel(info.username)
-                    logChannel.send('"' + info.username + '"' + cfg.consts.entered)
+                    logChannel.send('"' + info.username + '"' + msgs.exitchannel)
                 })
             }
         }
+    } else if (oldState.channelID == cfg.discord.channels.voice) {
+        // user leaves the voice channel by pressing disconnect
+        var u = new Discord.User(client, {
+            id: oldState.id
+        })
+        u.fetch().then(info => {
+            exitChannel(info.username)
+            logChannel.send('"' + info.username + '"' + msgs.exitchannel)
+        })
     }
 })
 

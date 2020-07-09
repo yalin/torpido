@@ -1,5 +1,7 @@
 const Discord = require('discord.js');
 
+
+
 /**
  * 
  * @param {Discord.Client} client Discord Client
@@ -16,4 +18,15 @@ exports.GetVoiceConnection = (client, vcid) => {
         }
     }
     return result
+}
+
+/**
+ * 
+ * @param {Discord.VoiceState} oldstate 
+ * @param {Discord.VoiceState} newstate 
+ */
+exports.GetStateDifference = ( oldstate, newstate) => {
+
+    if(oldstate.channelID != newstate.channelID) {}
+
 }
