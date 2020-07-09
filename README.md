@@ -88,8 +88,6 @@ You need to create `config.json` file to compile.
             "log": "log_channel_id"
     },
     "consts":{
-        "entered" : " entered channel",
-        "exit" : " exit channel",
         "speechlang" : "en",
         "speechspeed" : 1,
         "leaveafterplay" : false
