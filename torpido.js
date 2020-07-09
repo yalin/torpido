@@ -321,31 +321,20 @@ client.on('message', msg => {
 
 client.on('voiceStateUpdate', (oldState, newState) => {
     // write to log channel if only user entered or left a specific voice channel
-    if (newState.channelID) {
-        if (newState.channelID == cfg.discord.channels.voice && newState.channelID != oldState.channelID) {
-            // user enters the voice channel
-            // bugfix = second condition added to catch only channel diff, not mute or deaf
-            var u = new Discord.User(client, {
-                id: oldState.id
-            })
-            u.fetch().then(info => {
-                enteredChannel(info.username)
-                logChannel.send('"' + info.username + '"' + msgs.enteredchannel)
-            })
-        } else {
-            if (oldState.channelID == cfg.discord.channels.voice) {
-                // user leaves the voice channel and enters another voice channel
-                var u = new Discord.User(client, {
-                    id: oldState.id
-                })
-                u.fetch().then(info => {
-                    exitChannel(info.username)
-                    logChannel.send('"' + info.username + '"' + msgs.exitchannel)
-                })
-            }
-        }
-    } else if (oldState.channelID == cfg.discord.channels.voice) {
-        // user leaves the voice channel by pressing disconnect
+    if (newState.channelID && newState.channelID == cfg.discord.channels.voice && newState.channelID != oldState.channelID) {
+        // user enters the voice channel
+        // bugfix = second condition added to catch only channel diff, not mute or deaf
+        var u = new Discord.User(client, {
+            id: oldState.id
+        })
+        u.fetch().then(info => {
+            enteredChannel(info.username)
+            logChannel.send('"' + info.username + '"' + msgs.enteredchannel)
+        })
+
+        console.log('girdi')
+    } else if (oldState.channelID && oldState.channelID == cfg.discord.channels.voice && newState.channelID != oldState.channelID) {
+        // user leaves the voice channel
         var u = new Discord.User(client, {
             id: oldState.id
         })
