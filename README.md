@@ -1,6 +1,6 @@
 # torpido
 
-torpido is a discord bot attribute to [peterloorke](https://github.com/egemenyildiz). The first generation created as an IRC bot at irc.freenode.org #sourberry<br>
+torpido is a discord bot attribute to [peterloorke](https://github.com/egemenyildiz). The first generation created as an IRC bot at irc.freenode.org #sourbet<br>
 This is the second generation and improved version of torpido.
 
 torpido uses [discord.js](https://discord.js.org/)
@@ -9,6 +9,8 @@ There are three channels defined;<br>
 * text channel : gets text commands
 * voice channel : any kind of voice interactions done by this channel
 * log channel : optional, it keeps the records for who entered and exit the voice channel
+
+Accent list can be found [here](https://cloud.google.com/translate/docs/languages).
 
 ---
 ## prerequisites
@@ -66,6 +68,13 @@ i.e : !vol 0.2
 
 !say {word(s)}
 Says the given words as voice
+
+!accent {langcode}
+Changes the accent of speech
+
+!img {keyword(s)}
+Brings the first result of google image search
+
 ```
 
 

@@ -1,8 +1,10 @@
 const fs = require('fs');
 const Discord = require('discord.js');
 const ytdl = require('ytdl-core');
-var youtubeSearch = require('youtube-search');
-var googleTTS = require('google-tts-api');
+const youtubeSearch = require('youtube-search');
+const googleTTS = require('google-tts-api');
+const gis = require('g-i-s');
+const Canvas = require('canvas')
 
 var voice = require('./voice/voice.js')
 let cfg = JSON.parse(fs.readFileSync('./config.json', 'utf-8'))
@@ -303,14 +305,41 @@ client.on('message', msg => {
                 msgs = JSON.parse(fs.readFileSync('./text/msgs.json', 'utf-8'))
                 break;
 
-            case 'lang':
+            case 'accent':
                 var requestedLanguage = rest[0]
                 if (languages.includes(requestedLanguage)) {
                     speechlang = requestedLanguage
-                    return msg.reply(msgs.languagesetto + requestedLanguage)
+                    msg.reply(msgs.languagesetto + requestedLanguage)
                 } else {
-                    return msg.reply(msgs.nosuchlanguage + requestedLanguage)
+                    msg.reply(msgs.nosuchlanguage + requestedLanguage)
                 }
+                break;
+
+            case 'img':
+                if (!rest[0]) {
+                    return msg.reply(msgs.searchwhat)
+                }
+                gis({
+                    searchTerm: rest.join(' '),
+                }, async function (err, results) {
+                    if (err) {
+                        return msg.reply(err)
+                    }
+
+                    for (let index = 0; index < results.length; index++) {
+                        result = results[index]
+                        const height = result.width
+                        const width = result.height
+                        const canvas = Canvas.createCanvas(width, height);
+                        const ctx = canvas.getContext('2d');
+                        const img = await Canvas.loadImage(src = result.url).catch(err => {})
+                        if (img) {
+                            ctx.drawImage(img, 0, 0, width, height);
+                            const attachment = new Discord.MessageAttachment(canvas.toBuffer(), rest.join() + '.png');
+                            return msg.reply(attachment)
+                        }
+                    }
+                });
                 break;
 
             default:

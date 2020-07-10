@@ -5,5 +5,6 @@
     "enteredchannel" : " entered channel",
     "exitchannel" : " exit channel",
     "languagesetto" : "language set to: ",
-    "nosuchlanguage" : "no such langauge: "
+    "nosuchlanguage" : "no such langauge: ",
+    "searchwhat" : "search wut?"
 }

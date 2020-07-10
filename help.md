@@ -9,5 +9,6 @@
 !stop : stops current stream
 !vol <[0-1]> : checks or sets volume
 !say {word(s)} : talks on behalf of you
-!lang {langcode} : changes accent
+!accent {langcode} : changes accent
+!img {keyword(s)} : image search
 ```
