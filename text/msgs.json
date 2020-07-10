@@ -1,10 +1,23 @@
 {
-    "notinchannel": "you need to be in voice channel first!",
-    "saywhat" : "say wut?",
-    "volumesetto" : "volume set to: ",
-    "enteredchannel" : " entered channel",
-    "exitchannel" : " exit channel",
-    "languagesetto" : "language set to: ",
-    "nosuchlanguage" : "no such langauge: ",
-    "searchwhat" : "search wut?"
+    "en" : {
+        "notinchannel": "you need to be in voice channel first!",
+        "saywhat" : "say wut?",
+        "volumesetto" : "volume set to: ",
+        "enteredchannel" : " entered channel",
+        "exitchannel" : " exit channel",
+        "languagesetto" : "language set to: ",
+        "nosuchlanguage" : "no such langauge: ",
+        "searchwhat" : "search wut?"
+    },
+    "tr" : {
+        "notinchannel": "önce bir kanala gir de...",
+        "saywhat" : "ne diyem?",
+        "volumesetto" : "yeni volume: ",
+        "enteredchannel" : " girdi",
+        "exitchannel" : " çıktı",
+        "languagesetto" : "yeni dil: ",
+        "nosuchlanguage" : "öyle bir dil yok: ",
+        "searchwhat" : "ne arayacam?"
+    }
 }
+

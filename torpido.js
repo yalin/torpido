@@ -8,7 +8,7 @@ const Canvas = require('canvas')
 
 var voice = require('./voice/voice.js')
 let cfg = JSON.parse(fs.readFileSync('./config.json', 'utf-8'))
-let msgs = JSON.parse(fs.readFileSync('./text/msgs.json', 'utf-8'))
+let msgfile = JSON.parse(fs.readFileSync('./text/msgs.json', 'utf-8'))
 
 const client = new Discord.Client();
 const guild = new Discord.Guild(client);
@@ -32,6 +32,8 @@ let _announceVolume = 1
 // language
 let speechlang = cfg.consts.speechlang
 let languages = require('./text/langs.js').langs
+let msglang = cfg.consts.msglang
+const msgs = msgfile[msglang]
 
 // functions
 function enteredChannel(username) {
