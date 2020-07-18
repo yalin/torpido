@@ -389,14 +389,16 @@ client.on('message', msg => {
                             // ctx.font = 'bold 40px arial'
 
                             let lx = textdoldur(ctx, canvas, capstext, bottomh)
-                            if(lx == undefined) { return msg.reply(' beklenmedik bi sorun oldu. beklenseydi zaten cozmus olurduk')}
+                            if (lx == undefined) {
+                                return msg.reply(' beklenmedik bi sorun oldu. beklenseydi zaten cozmus olurduk')
+                            }
                             // console.log("lx :\n", lx);
-                            ctx.font = `bold ${lx.fontsize}px arial`        
+                            ctx.font = `bold ${lx.fontsize}px arial`
                             // console.log("lx.font :\n", lx);
 
                             for (let s = 0; s < lx.returnlines.length; s++) {
                                 let linesize = Math.round(lx.fontsize * 1.3) // 30% of font pixel is line height
-                                ctx.fillText(lx.returnlines[s], canvasw / 2, bottomstarty + (s * linesize));                                
+                                ctx.fillText(lx.returnlines[s], canvasw / 2, bottomstarty + (s * linesize));
                             }
                             let attachment = new Discord.MessageAttachment(canvas.toBuffer(), rest.join() + '.png');
                             return msg.reply(attachment)
@@ -412,8 +414,8 @@ client.on('message', msg => {
 });
 
 function textdoldur(ctx, canvas, text, textAreaHeight) {
-
-    let highfont = 40
+    
+    let highfont = 100
     let lowfont = 15
     let fontsize
     let returnlines
@@ -447,7 +449,10 @@ function textdoldur(ctx, canvas, text, textAreaHeight) {
 
     // console.log("size for sonrasi :\n", fontsize);
 
-    return {fontsize,  returnlines}
+    return {
+        fontsize,
+        returnlines
+    }
 }
 
 function getLines(ctx, text, maxWidth) {
