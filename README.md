@@ -99,7 +99,8 @@ You need to create `config.json` file to compile.
     "consts":{
         "speechlang" : "en",
         "speechspeed" : 1,
-        "leaveafterplay" : false
+        "leaveafterplay" : false,
+        "msglang" : "en"
     }
 }
 ```
