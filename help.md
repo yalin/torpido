@@ -1,14 +1,15 @@
 ```
-!help : shows you this
-!ping : checks either bot connected or not
-!join : joins voice channel
-!leave : leaves voice channel
-!teoman : o Teoman'i var ya...
+!help            : shows you this
+!ping            : checks either bot connected or not
+!join            : joins voice channel
+!leave           : leaves voice channel
+!teoman          : o Teoman'i var ya...
 !yt {keyword(s)} : searches youtube videos
 !play {url} | {keyword(s)} : plays video as audio
-!stop : stops current stream
-!vol <[0-1]> : checks or sets volume
-!say {word(s)} : talks on behalf of you
+!stop            : stops current stream
+!vol <[0-1]>     : checks or sets volume
+!say {word(s)}   : talks on behalf of you
 !accent {langcode} : changes accent
-!img {keyword(s)} : image search
+!img {keyword(s)}  : image search
+!caps {search keyword(s)} + {caps text} : extraordinary caps generator
 ```

@@ -330,18 +330,79 @@ client.on('message', msg => {
 
                     for (let index = 0; index < results.length; index++) {
                         result = results[index]
-                        const height = result.width
-                        const width = result.height
-                        const canvas = Canvas.createCanvas(width, height);
-                        const ctx = canvas.getContext('2d');
-                        const img = await Canvas.loadImage(src = result.url).catch(err => {})
+                        let img = await Canvas.loadImage(src = result.url).catch(err => {})
                         if (img) {
-                            ctx.drawImage(img, 0, 0, width, height);
-                            const attachment = new Discord.MessageAttachment(canvas.toBuffer(), rest.join() + '.png');
+                            // if image is valid. sometimes images can be corrupted, so it skips that result
+                            let canvas = Canvas.createCanvas(result.width, result.height);
+                            let ctx = canvas.getContext('2d');
+                            ctx.drawImage(img, 0, 0, result.width, result.height);
+                            let attachment = new Discord.MessageAttachment(canvas.toBuffer(), rest.join() + '.png');
                             return msg.reply(attachment)
                         }
                     }
                 });
+                break;
+
+            case 'caps':
+                if (!rest[0]) {
+                    return msg.reply(msgs.searchwhat)
+                }
+
+                let seperateindex = rest.indexOf('+')
+                let imgtext = rest.slice(0, seperateindex).join(' ')
+                let capstext = rest.slice(seperateindex + 1).map(x => {
+                    return x.toUpperCase()
+                }).join(' ')
+
+                gis({
+                    searchTerm: imgtext,
+                }, async function (err, results) {
+                    if (err) {
+                        return msg.reply(err)
+                    }
+
+                    for (let index = 0; index < results.length; index++) {
+                        result = results[index]
+                        let imgh = result.height
+                        // console.log("imgh :\n", imgh);
+                        let imgw = result.width
+                        // console.log("imgw :\n", imgw);
+                        let bottomh = Math.round(imgh / 3) // simdilik
+                        // console.log("bottomh :\n", bottomh);
+                        let bottomw = imgw
+                        let bottomstarty = imgh
+                        let canvash = imgh + bottomh
+                        let canvasw = imgw
+
+                        let img = await Canvas.loadImage(src = result.url).catch(err => {})
+                        if (img) {
+                            let canvas = Canvas.createCanvas(imgw, imgh + bottomh);
+                            let ctx = canvas.getContext('2d');
+                            ctx.drawImage(img, 0, 0, imgw, imgh);
+                            ctx.fillStyle = 'red'
+                            ctx.fillRect(0, bottomstarty, bottomw, bottomh)
+
+                            // caps text
+                            ctx.fillStyle = '#ffffff';
+                            ctx.textBaseline = 'top'
+                            ctx.textAlign = 'center'
+                            // ctx.font = 'bold 40px arial'
+
+                            let lx = textdoldur(ctx, canvas, capstext, bottomh)
+                            if(lx == undefined) { return msg.reply(' beklenmedik bi sorun oldu. beklenseydi zaten cozmus olurduk')}
+                            // console.log("lx :\n", lx);
+                            ctx.font = `bold ${lx.fontsize}px arial`        
+                            // console.log("lx.font :\n", lx);
+
+                            for (let s = 0; s < lx.returnlines.length; s++) {
+                                let linesize = Math.round(lx.fontsize * 1.3) // 30% of font pixel is line height
+                                ctx.fillText(lx.returnlines[s], canvasw / 2, bottomstarty + (s * linesize));                                
+                            }
+                            let attachment = new Discord.MessageAttachment(canvas.toBuffer(), rest.join() + '.png');
+                            return msg.reply(attachment)
+                        }
+                    }
+                })
                 break;
 
             default:
@@ -349,6 +410,64 @@ client.on('message', msg => {
         }
     }
 });
+
+function textdoldur(ctx, canvas, text, textAreaHeight) {
+
+    let highfont = 40
+    let lowfont = 15
+    let fontsize
+    let returnlines
+
+    // console.log('\n------------\ntext doldur:\n')
+
+    for (let size = highfont; size > lowfont; size -= 2) {
+        ctx.font = `bold ${size}px arial`
+        // console.log("\nsize :", size);
+        if (ctx.measureText(text).width > canvas.width) {
+            // console.log(size + ' px e gore sigmadi')
+            let lines = getLines(ctx, text, canvas.width)
+            // console.log("lines.length :", lines.length);
+            let gapsize = Math.round(size * 1.3) // 30% of font pixel is line height
+            // console.log("bir satir :", gapsize);
+            let totalfontheight = gapsize * lines.length
+            // console.log("toplam satir :", totalfontheight);
+            // console.log("canvas.height :", textAreaHeight);
+
+            if (totalfontheight <= textAreaHeight) {
+                fontsize = size
+                returnlines = lines
+                break;
+            }
+        } else {
+            fontsize = size
+            returnlines = [text]
+            break;
+        }
+    }
+
+    // console.log("size for sonrasi :\n", fontsize);
+
+    return {fontsize,  returnlines}
+}
+
+function getLines(ctx, text, maxWidth) {
+    var words = text.split(" ");
+    var lines = [];
+    var currentLine = words[0];
+
+    for (var i = 1; i < words.length; i++) {
+        var word = words[i];
+        var width = ctx.measureText(currentLine + " " + word).width;
+        if (width < maxWidth) {
+            currentLine += " " + word;
+        } else {
+            lines.push(currentLine);
+            currentLine = word;
+        }
+    }
+    lines.push(currentLine);
+    return lines;
+}
 
 client.on('voiceStateUpdate', (oldState, newState) => {
     // write to log channel if only user entered or left a specific voice channel

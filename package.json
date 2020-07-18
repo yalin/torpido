@@ -1,6 +1,6 @@
 {
   "name": "torpido",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "description": "A magnificent discord bot with voice features.",
   "main": "torpido.js",
   "author": "yalin",
@@ -11,7 +11,7 @@
     "discord.js": "^12.2.0",
     "erlpack": "github:discordapp/erlpack",
     "ffmpeg-static": "^4.2.5",
-    "g-i-s": "^2.1.5",
+    "g-i-s": "^2.1.6",
     "google-tts-api": "0.0.4",
     "libsodium-wrappers": "^0.7.6",
     "node-opus": "^0.3.3",
