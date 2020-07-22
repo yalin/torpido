@@ -12,6 +12,8 @@ There are three channels defined;<br>
 
 Accent list can be found [here](https://cloud.google.com/translate/docs/languages).
 
+Changelog: latest version [1.1.0](https://github.com/yalin/torpido/blob/master/CHANGELOG.md)
+
 ---
 ## prerequisites
 [ffmpeg](http://ffmpeg.org/) needs to be installed for voice channel playback.
@@ -74,6 +76,9 @@ Changes the accent of speech
 
 !img {keyword(s)}
 Brings the first result of google image search
+
+!caps {imageKeyword(s)} + {capsText}
+Adorable caps generator.
 
 ```
 
