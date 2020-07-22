@@ -7,6 +7,7 @@ const gis = require('g-i-s');
 const Canvas = require('canvas')
 
 var voice = require('./voice/voice.js')
+var caps = require('./image/caps.js')
 let cfg = JSON.parse(fs.readFileSync('./config.json', 'utf-8'))
 let msgfile = JSON.parse(fs.readFileSync('./text/msgs.json', 'utf-8'))
 
@@ -364,11 +365,8 @@ client.on('message', msg => {
                     for (let index = 0; index < results.length; index++) {
                         result = results[index]
                         let imgh = result.height
-                        // console.log("imgh :\n", imgh);
                         let imgw = result.width
-                        // console.log("imgw :\n", imgw);
-                        let bottomh = Math.round(imgh / 3) // simdilik
-                        // console.log("bottomh :\n", bottomh);
+                        let bottomh = Math.round(imgh / 3) // %30 of height will be added as red bottom
                         let bottomw = imgw
                         let bottomstarty = imgh
                         let canvash = imgh + bottomh
@@ -386,15 +384,12 @@ client.on('message', msg => {
                             ctx.fillStyle = '#ffffff';
                             ctx.textBaseline = 'top'
                             ctx.textAlign = 'center'
-                            // ctx.font = 'bold 40px arial'
 
-                            let lx = textdoldur(ctx, canvas, capstext, bottomh)
+                            let lx = caps.createCaps(ctx, canvas, capstext, bottomh)
                             if (lx == undefined) {
                                 return msg.reply(' beklenmedik bi sorun oldu. beklenseydi zaten cozmus olurduk')
                             }
-                            // console.log("lx :\n", lx);
                             ctx.font = `bold ${lx.fontsize}px arial`
-                            // console.log("lx.font :\n", lx);
 
                             for (let s = 0; s < lx.returnlines.length; s++) {
                                 let linesize = Math.round(lx.fontsize * 1.3) // 30% of font pixel is line height
@@ -412,67 +407,6 @@ client.on('message', msg => {
         }
     }
 });
-
-function textdoldur(ctx, canvas, text, textAreaHeight) {
-    
-    let highfont = 100
-    let lowfont = 15
-    let fontsize
-    let returnlines
-
-    // console.log('\n------------\ntext doldur:\n')
-
-    for (let size = highfont; size > lowfont; size -= 2) {
-        ctx.font = `bold ${size}px arial`
-        // console.log("\nsize :", size);
-        if (ctx.measureText(text).width > canvas.width) {
-            // console.log(size + ' px e gore sigmadi')
-            let lines = getLines(ctx, text, canvas.width)
-            // console.log("lines.length :", lines.length);
-            let gapsize = Math.round(size * 1.3) // 30% of font pixel is line height
-            // console.log("bir satir :", gapsize);
-            let totalfontheight = gapsize * lines.length
-            // console.log("toplam satir :", totalfontheight);
-            // console.log("canvas.height :", textAreaHeight);
-
-            if (totalfontheight <= textAreaHeight) {
-                fontsize = size
-                returnlines = lines
-                break;
-            }
-        } else {
-            fontsize = size
-            returnlines = [text]
-            break;
-        }
-    }
-
-    // console.log("size for sonrasi :\n", fontsize);
-
-    return {
-        fontsize,
-        returnlines
-    }
-}
-
-function getLines(ctx, text, maxWidth) {
-    var words = text.split(" ");
-    var lines = [];
-    var currentLine = words[0];
-
-    for (var i = 1; i < words.length; i++) {
-        var word = words[i];
-        var width = ctx.measureText(currentLine + " " + word).width;
-        if (width < maxWidth) {
-            currentLine += " " + word;
-        } else {
-            lines.push(currentLine);
-            currentLine = word;
-        }
-    }
-    lines.push(currentLine);
-    return lines;
-}
 
 client.on('voiceStateUpdate', (oldState, newState) => {
     // write to log channel if only user entered or left a specific voice channel
