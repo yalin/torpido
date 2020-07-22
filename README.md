@@ -14,7 +14,9 @@ Accent list can be found [here](https://cloud.google.com/translate/docs/language
 
 Changelog: latest version [1.1.0](https://github.com/yalin/torpido/blob/master/CHANGELOG.md)
 
----
+### contact
+Discord username: etsw#2539
+
 ## prerequisites
 [ffmpeg](http://ffmpeg.org/) needs to be installed for voice channel playback.
 
@@ -27,7 +29,6 @@ for windows:
 
 sometimes, there is a problem with `node-pre-gyp` then it needs to be installed manually.
 
----
 ## commands
 
 ```
@@ -83,7 +84,6 @@ Adorable caps generator.
 ```
 
 
----
 ## config
 
 You need to create `config.json` file to compile.
