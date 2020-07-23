@@ -177,7 +177,7 @@ client.on('message', msg => {
                                         config: requestConfig
                                     }
 
-                                    const recognizeStream = sclient
+                                    const recognizeStream = speechclient
                                         .streamingRecognize(request)
                                         .on('error', console.error)
                                         .on('data', response => {
