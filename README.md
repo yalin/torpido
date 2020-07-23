@@ -17,6 +17,8 @@ Changelog: latest version [1.1.0](https://github.com/yalin/torpido/blob/master/C
 ### contact
 Discord username: etsw#2539
 
+---
+
 ## prerequisites
 [ffmpeg](http://ffmpeg.org/) needs to be installed for voice channel playback.
 

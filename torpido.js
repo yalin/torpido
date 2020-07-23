@@ -1,3 +1,7 @@
+require('dotenv').config({
+    path: 'process.env'
+})
+
 const fs = require('fs');
 const Discord = require('discord.js');
 const ytdl = require('ytdl-core');
@@ -10,6 +14,11 @@ var voice = require('./voice/voice.js')
 var caps = require('./image/caps.js')
 let cfg = JSON.parse(fs.readFileSync('./config.json', 'utf-8'))
 let msgfile = JSON.parse(fs.readFileSync('./text/msgs.json', 'utf-8'))
+
+const { Transform } = require('stream')
+
+const speech = require('@google-cloud/speech');
+const speechclient = new speech.SpeechClient();
 
 const client = new Discord.Client();
 const guild = new Discord.Guild(client);
@@ -82,6 +91,48 @@ function checkifPersonInVoiceChannel(msg) {
     }
 
 }
+
+
+// speech functions
+function convertBufferTo1Channel(buffer) {
+    const convertedBuffer = Buffer.alloc(buffer.length / 2)
+
+    for (let i = 0; i < convertedBuffer.length / 2; i++) {
+        const uint16 = buffer.readUInt16LE(i * 4)
+        convertedBuffer.writeUInt16LE(uint16, i * 2)
+    }
+
+    return convertedBuffer
+}
+
+class ConvertTo1ChannelStream extends Transform {
+    constructor(source, options) {
+        super(options)
+    }
+
+    _transform(data, encoding, next) {
+        next(null, convertBufferTo1Channel(data))
+    }
+}
+
+
+function sayIt(text) {
+    var vConnection = voice.GetVoiceConnection(client, voiceChannel.id)
+    if (vConnection) {
+        googleTTS(text, speechlang, cfg.consts.speechspeed)
+            .then(function (url) {
+                ytdispatcher = vConnection.play(url, {
+                    volume: _announceVolume
+                });
+            })
+            .catch(function (err) {
+                console.error(err.stack);
+            });
+    }
+}
+
+
+
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
 });
@@ -111,11 +162,47 @@ client.on('message', msg => {
             case 'join':
                 voiceChannel.fetch().then(vc => {
                     vc.join().then(connection => {
-                            // console.log("\n", connection.channel);
-                            // connection.on('speaking', user => {
-                            //     console.log('============================')
-                            //     console.log('konusan :', user);
-                            // })
+                            connection.on('speaking', (user, speaking) => {
+                                if (speaking.bitfield == 1) {
+                                    var audioStream = connection.receiver.createStream(user, {
+                                        mode: 'pcm'
+                                    });
+
+                                    const requestConfig = {
+                                        encoding: 'LINEAR16',
+                                        sampleRateHertz: 48000,
+                                        languageCode: 'tr-TR'
+                                    }
+                                    const request = {
+                                        config: requestConfig
+                                    }
+
+                                    const recognizeStream = sclient
+                                        .streamingRecognize(request)
+                                        .on('error', console.error)
+                                        .on('data', response => {
+                                            const transcription = response.results
+                                                .map(result => result.alternatives[0].transcript)
+                                                .join('\n')
+                                                .toLowerCase()
+
+                                            if (transcription == 'hey torpido saat kaç') {
+                                                console.log('saati sordu\n')
+                                                var date = new Date();
+                                                var time = date.getHours() + ' ' + date.getMinutes()
+                                                sayIt('saat ' + time)
+                                            }
+
+                                        })
+
+                                    const convertTo1ChannelStream = new ConvertTo1ChannelStream()
+                                    audioStream.pipe(convertTo1ChannelStream).pipe(recognizeStream)
+                                    audioStream.on('end', async () => {
+                                        console.log('audioStream end')
+                                    })
+
+                                }
+                            })
                         })
                         .catch(console.error);
                 })
@@ -131,12 +218,14 @@ client.on('message', msg => {
             case 'hash':
                 // will fix next commit
                 voiceChannel.fetch().then(vc => {
-                        var memberss = vc.members
-                        memberss.forEach(element => {
-                            console.log("member :", element.user.username);
-                        });
+                        // var memberss = vc.members
+                        // memberss.forEach(element => {
+                        //     console.log("member :", element.user.username);
+                        // });
                         new Promise((resolve, reject) => {
-                                vc.leave()
+                                vc.join().then(connection => {
+                                    vc.leave()
+                                })
                             }).then(good => {
                                 vc.join().catch(console.error);
                             })

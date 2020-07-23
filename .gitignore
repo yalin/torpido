@@ -1,3 +1,5 @@
 node_modules/
 torpido.code-workspace
 config.json
+torpido_FILES/
+process.env
