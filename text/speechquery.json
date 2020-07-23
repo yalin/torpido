@@ -1,0 +1,10 @@
+{
+    "en" : {
+        "whatistime": "hey torpido what time is it",
+        "whoisinchannel" : "hey torpido who is in channel"
+    },
+    "tr" : {
+        "whatistime": "hey torpido saat kaç",
+        "whoisinchannel" : "hey torpido kanalda kimler var"
+    }
+}

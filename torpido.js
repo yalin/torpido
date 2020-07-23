@@ -14,8 +14,11 @@ var voice = require('./voice/voice.js')
 var caps = require('./image/caps.js')
 let cfg = JSON.parse(fs.readFileSync('./config.json', 'utf-8'))
 let msgfile = JSON.parse(fs.readFileSync('./text/msgs.json', 'utf-8'))
+let speechQfile = JSON.parse(fs.readFileSync('./text/speechquery.json', 'utf-8'))
 
-const { Transform } = require('stream')
+const {
+    Transform
+} = require('stream')
 
 const speech = require('@google-cloud/speech');
 const speechclient = new speech.SpeechClient();
@@ -44,6 +47,7 @@ let speechlang = cfg.consts.speechlang
 let languages = require('./text/langs.js').langs
 let msglang = cfg.consts.msglang
 const msgs = msgfile[msglang]
+const speechqueries = speechQfile[msglang]
 
 // functions
 function enteredChannel(username) {
@@ -186,19 +190,39 @@ client.on('message', msg => {
                                                 .join('\n')
                                                 .toLowerCase()
 
-                                            if (transcription == 'hey torpido saat kaç') {
-                                                console.log('saati sordu\n')
-                                                var date = new Date();
-                                                var time = date.getHours() + ' ' + date.getMinutes()
-                                                sayIt('saat ' + time)
-                                            }
+                                            console.log(user.username + ' :\n', transcription);
 
+                                            switch (transcription) {
+                                                case speechqueries.whatistime:
+                                                    console.log(user.username + ' saati sordu\n')
+                                                    var date = new Date();
+                                                    var time = date.getHours() + ' ' + date.getMinutes()
+                                                    sayIt('saat ' + time)
+                                                    break;
+
+                                                case speechqueries.whoisinchannel:
+                                                    console.log(user.username + ' kanali sordu\n')
+                                                    var people = vc.members
+                                                    var peopleInChannel = []
+                                                    people.forEach(element => {
+                                                        peopleInChannel.push(element.user.username)
+                                                    });
+                                                    var peopleRest = peopleInChannel.filter(function (x) {
+                                                        return x != cfg.botnick;
+                                                    });
+                                                    sayIt('kanalda ' + peopleRest.join(' ') + ' bir de ben varım')
+                                                    break;
+
+                                                default:
+                                                    break;
+                                            }
                                         })
 
                                     const convertTo1ChannelStream = new ConvertTo1ChannelStream()
                                     audioStream.pipe(convertTo1ChannelStream).pipe(recognizeStream)
-                                    audioStream.on('end', async () => {
-                                        console.log('audioStream end')
+                                    audioStream.on('end', async () => {})
+                                    audioStream.on('error', (err) => {
+                                        msg.reply('bir hata oldu')
                                     })
 
                                 }
