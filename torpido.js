@@ -46,8 +46,8 @@ let _announceVolume = 1
 let speechlang = cfg.consts.speechlang
 let languages = require('./text/langs.js').langs
 let msglang = cfg.consts.msglang
-const msgs = msgfile[msglang]
-const speechqueries = speechQfile[msglang]
+let msgs = msgfile[msglang]
+let speechqueries = speechQfile[msglang]
 
 // functions
 function enteredChannel(username) {
@@ -422,6 +422,10 @@ client.on('message', msg => {
             case 'reload':
                 cfg = JSON.parse(fs.readFileSync('./config.json', 'utf-8'))
                 msgs = JSON.parse(fs.readFileSync('./text/msgs.json', 'utf-8'))
+                speechQfile = JSON.parse(fs.readFileSync('./text/speechquery.json', 'utf-8'))
+
+                msgs = msgfile[msglang]
+                speechqueries = speechQfile[msglang]
                 break;
 
             case 'accent':

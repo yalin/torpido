@@ -1,12 +1,12 @@
 {
     "en" : {
-        "whatistime": "hey torpido what time is it",
-        "whoisinchannel" : "hey torpido who is in channel",
+        "whatistime": "torpido what time is it",
+        "whoisinchannel" : "torpido who is in channel",
         "welcometorpido" : "welcome torpido"
     },
     "tr" : {
-        "whatistime": "hey torpido saat kaç",
-        "whoisinchannel" : "hey torpido kanalda kimler var",
+        "whatistime": "torpido saat kaç",
+        "whoisinchannel" : "torpido kanalda kimler var",
         "welcometorpido" : "hoşgeldin torpido"
     }
 }
