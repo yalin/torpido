@@ -212,6 +212,9 @@ client.on('message', msg => {
                                                     });
                                                     sayIt('kanalda ' + peopleRest.join(' ') + ' bir de ben varım')
                                                     break;
+                                                case speechqueries.welcometorpido:
+                                                    sayIt('hoşbuldum')
+                                                    break;
 
                                                 default:
                                                     break;
