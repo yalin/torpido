@@ -22,6 +22,7 @@ const {
 
 const speech = require('@google-cloud/speech');
 const speechclient = new speech.SpeechClient();
+let speechstatus = 1
 
 const client = new Discord.Client();
 const guild = new Discord.Guild(client);
@@ -162,11 +163,24 @@ client.on('message', msg => {
                     msg.reply(data)
                 });
                 break;
+            
+            case 'speech':
+                var vc = msg.member.voice.channel;
+                if (!vc) {
+                    return msg.reply(msgs.notinchannel);
+                }
+                if (!rest[0]) {
+                    return msg.reply((speechstatus == 1) ? 'on' : 'off')
+                }
+                speechstatus = (rest[0] == 'on') ? 1 : 0
+                msg.reply((speechstatus == 1) ? 'on' : 'off')
+                break;
 
             case 'join':
                 voiceChannel.fetch().then(vc => {
                     vc.join().then(connection => {
                             connection.on('speaking', (user, speaking) => {
+                                if (speechstatus == 0) {return;} // added if speech is off, dont look at google speech
                                 if (speaking.bitfield == 1) {
                                     var audioStream = connection.receiver.createStream(user, {
                                         mode: 'pcm'
