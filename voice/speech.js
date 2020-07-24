@@ -42,7 +42,7 @@ exports.botSpeechResponse = (text, vc) => {
         }
 
         if(commandArray.includes('zar')){
-            return dice()
+            return dice().toString()
         }
 
 
