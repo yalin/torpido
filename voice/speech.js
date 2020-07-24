@@ -53,3 +53,8 @@ exports.botSpeechResponse = (text, vc) => {
 function dice() {
     return Math.floor(6 * Math.random()) + 1
 }
+
+function flipcoin() {
+    let rn = Math.floor(2 * Math.random()) + 1
+    return (rn == 1) ? 'yazı' : 'tura'
+}
