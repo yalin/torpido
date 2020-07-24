@@ -20,6 +20,7 @@ const {
     Transform
 } = require('stream')
 
+var botspeech = require('./voice/speech.js')
 const speech = require('@google-cloud/speech');
 const speechclient = new speech.SpeechClient();
 let speechstatus = 1
@@ -163,7 +164,7 @@ client.on('message', msg => {
                     msg.reply(data)
                 });
                 break;
-            
+
             case 'speech':
                 var vc = msg.member.voice.channel;
                 if (!vc) {
@@ -180,7 +181,9 @@ client.on('message', msg => {
                 voiceChannel.fetch().then(vc => {
                     vc.join().then(connection => {
                             connection.on('speaking', (user, speaking) => {
-                                if (speechstatus == 0) {return;} // added if speech is off, dont look at google speech
+                                if (speechstatus == 0) {
+                                    return;
+                                } // added if speech is off, dont look at google speech
                                 if (speaking.bitfield == 1) {
                                     var audioStream = connection.receiver.createStream(user, {
                                         mode: 'pcm'
@@ -206,33 +209,12 @@ client.on('message', msg => {
 
                                             console.log(user.username + ' :\n', transcription);
 
-                                            switch (transcription) {
-                                                case speechqueries.whatistime:
-                                                    console.log(user.username + ' saati sordu\n')
-                                                    var date = new Date();
-                                                    var time = date.getHours() + ' ' + date.getMinutes()
-                                                    sayIt('saat ' + time)
-                                                    break;
-
-                                                case speechqueries.whoisinchannel:
-                                                    console.log(user.username + ' kanali sordu\n')
-                                                    var people = vc.members
-                                                    var peopleInChannel = []
-                                                    people.forEach(element => {
-                                                        peopleInChannel.push(element.user.username)
-                                                    });
-                                                    var peopleRest = peopleInChannel.filter(function (x) {
-                                                        return x != cfg.botnick;
-                                                    });
-                                                    sayIt('kanalda ' + peopleRest.join(' ') + ' bir de ben varım')
-                                                    break;
-                                                case speechqueries.welcometorpido:
-                                                    sayIt('hoşbuldum')
-                                                    break;
-
-                                                default:
-                                                    break;
+                                            var botresponse = botspeech.botSpeechResponse(text = transcription, vc = vc, botnick = cfg.botnick)
+                                            console.log("botresponse speaking :\n", botresponse);
+                                            if(botresponse){
+                                                sayIt(botresponse);
                                             }
+                                            
                                         })
 
                                     const convertTo1ChannelStream = new ConvertTo1ChannelStream()
