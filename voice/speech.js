@@ -9,11 +9,12 @@ const Discord = require('discord.js');
 exports.botSpeechResponse = (text, vc) => {
     var words = text.split(' ')
     if (words.includes('torpido')) {
-        let whoisinchannel = ['kanalda', 'kimler', 'var']
+        
         var commandIndex = words.indexOf('torpido')
         var commandArray = words.slice(commandIndex + 1)
         var commandStr = commandArray.join(' ')
 
+        // what time is it
         if (commandArray.includes('saat')) {
             var date = new Date();
             var hrs = parseInt(date.getHours()) + 3 // +3 added because of Istanbul, TODO: change to timezone
@@ -21,6 +22,8 @@ exports.botSpeechResponse = (text, vc) => {
             return ('saat ' + time)
         }
 
+        // who is in channel
+        let whoisinchannel = ['kanalda', 'kimler', 'var']
         if (whoisinchannel.every(v => commandArray.includes(v))) {
             var people = vc.members
             var peopleInChannel = []
@@ -33,16 +36,24 @@ exports.botSpeechResponse = (text, vc) => {
             return 'kanalda ' + peopleRest.join('  ') + ' bir de ben varım'
         }
 
+        // welcome
         if (commandArray.includes('hoş geldin')) {
             return 'hoşbuldum'
         }
 
+        // whats up
         if (commandArray.includes('ne haber')) {
             return 'daha iyi günlerim olmuştu'
         }
 
+        // roll a dice
         if (commandArray.includes('zar')) {
             return dice().toString()
+        }
+
+        let aCoin = ['yazı', 'tura']
+        if (aCoin.every(v => commandArray.includes(v))) {
+            return flipcoin()
         }
 
 
