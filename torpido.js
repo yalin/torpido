@@ -210,11 +210,11 @@ client.on('message', msg => {
                                             console.log(user.username + ' :\n', transcription);
 
                                             var botresponse = botspeech.botSpeechResponse(text = transcription, vc = vc, botnick = cfg.botnick)
-                                            console.log("botresponse speaking :\n", botresponse);
-                                            if(botresponse){
+                                            if (botresponse) {
+                                                console.log("torpido :\n", botresponse);
                                                 sayIt(botresponse);
                                             }
-                                            
+
                                         })
 
                                     const convertTo1ChannelStream = new ConvertTo1ChannelStream()

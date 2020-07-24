@@ -11,7 +11,7 @@ exports.botSpeechResponse = (text, vc) => {
     if (words.includes('torpido')) {
         let whoisinchannel = ['kanalda', 'kimler', 'var']
         var commandIndex = words.indexOf('torpido')
-        var commandArray = words.slice(commandIndex + 1)
+        var commandArray = words.slice(commandIndex + 3) // +3 added because of Istanbul, TODO: change to timezone
         var commandStr = commandArray.join(' ')
 
         if (commandArray.includes('saat')) {
@@ -37,11 +37,11 @@ exports.botSpeechResponse = (text, vc) => {
             return 'hoşbuldum'
         }
 
-        if (commandArray.includes('ne haber')){
+        if (commandArray.includes('ne haber')) {
             return 'daha iyi günlerim olmuştu'
         }
 
-        if(commandArray.includes('zar')){
+        if (commandArray.includes('zar')) {
             return dice().toString()
         }
 
@@ -51,7 +51,5 @@ exports.botSpeechResponse = (text, vc) => {
 
 
 function dice() {
-    let numbers = [1,2,3,4,5,6]
-    let rn = Math.floor(Math.random() * Math.floor(numbers.length))
-    return numbers[rn]
+    return Math.floor(6 * Math.random()) + 1
 }
