@@ -11,12 +11,12 @@ exports.botSpeechResponse = (text, vc) => {
     if (words.includes('torpido')) {
         let whoisinchannel = ['kanalda', 'kimler', 'var']
         var commandIndex = words.indexOf('torpido')
-        var commandArray = words.slice(commandIndex + 3) // +3 added because of Istanbul, TODO: change to timezone
+        var commandArray = words.slice(commandIndex + 1)
         var commandStr = commandArray.join(' ')
 
         if (commandArray.includes('saat')) {
             var date = new Date();
-            var hrs = parseInt(date.getHours()) + 1
+            var hrs = parseInt(date.getHours()) + 3 // +3 added because of Istanbul, TODO: change to timezone
             var time = hrs + ' ' + date.getMinutes()
             return ('saat ' + time)
         }
