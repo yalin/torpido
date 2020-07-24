@@ -40,5 +40,18 @@ exports.botSpeechResponse = (text, vc) => {
         if (commandArray.includes('ne haber')){
             return 'daha iyi günlerim olmuştu'
         }
+
+        if(commandArray.includes('zar')){
+            return dice()
+        }
+
+
     }
+}
+
+
+function dice() {
+    let numbers = [1,2,3,4,5,6]
+    let rn = Math.floor(Math.random() * Math.floor(numbers.length))
+    return numbers[rn]
 }
