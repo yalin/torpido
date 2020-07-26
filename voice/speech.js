@@ -1,4 +1,8 @@
 const Discord = require('discord.js');
+const fs = require('fs');
+const {
+    resolve
+} = require('path');
 
 /**
  * 
@@ -6,25 +10,28 @@ const Discord = require('discord.js');
  * @param {Discord.VoiceChannel} vc VoiceConnection
  * @param {String} botnick Bot's nick
  */
-exports.botSpeechResponse = (text, vc) => {
+exports.botSpeechResponse = async (text, vc) => {
     var words = text.split(' ')
+
+
     if (words.includes('torpido')) {
-        
+
         var commandIndex = words.indexOf('torpido')
         var commandArray = words.slice(commandIndex + 1)
-        var commandStr = commandArray.join(' ')
 
         // what time is it
         if (commandArray.includes('saat')) {
             var date = new Date();
             var hrs = parseInt(date.getHours()) + 3 // +3 added because of Istanbul, TODO: change to timezone
             var time = hrs + ' ' + date.getMinutes()
-            return ('saat ' + time)
+            return {
+                'response': ('saat ' + time),
+                'accent': 'tr'
+            }
         }
 
         // who is in channel
-        let whoisinchannel = ['kanalda', 'kimler', 'var']
-        if (whoisinchannel.every(v => commandArray.includes(v))) {
+        if (['kanalda', 'kimler', 'var'].every(v => commandArray.includes(v))) {
             var people = vc.members
             var peopleInChannel = []
             people.forEach(element => {
@@ -33,30 +40,51 @@ exports.botSpeechResponse = (text, vc) => {
             var peopleRest = peopleInChannel.filter(function (x) {
                 return x != botnick;
             });
-            return 'kanalda ' + peopleRest.join('  ') + ' bir de ben varım'
+            return {
+                'response': 'kanalda ' + peopleRest.join('  ') + ' bir de ben varım',
+                'accent': 'tr'
+            }
         }
 
         // welcome
-        if (commandArray.includes('hoş geldin')) {
-            return 'hoşbuldum'
+        if (text.includes('hoş geldin')) {
+            return {
+                'response': 'hoşbuldum',
+                'accent': 'tr'
+            }
         }
 
         // whats up
-        if (commandArray.includes('ne haber')) {
-            return 'daha iyi günlerim olmuştu'
+        if (text.includes('ne haber')) {
+            return {
+                'response': 'daha iyi günlerim olmuştu',
+                'accent': 'tr'
+            }
         }
 
         // roll a dice
         if (commandArray.includes('zar')) {
-            return dice().toString()
+            return {
+                'response': dice().toString(),
+                'accent': 'tr'
+            }
         }
 
-        let aCoin = ['yazı', 'tura']
-        if (aCoin.every(v => commandArray.includes(v))) {
-            return flipcoin()
+        // flip a coin
+        if (['yazı', 'tura'].every(v => commandArray.includes(v))) {
+            return {
+                'response': flipcoin(),
+                'accent': 'tr'
+            }
         }
 
-
+        // choose dota hero
+        if (['kimi', 'seçeyim'].every(x => commandArray.includes(x))) {
+            return {
+                'response': await whichDotaHero(),
+                'accent': 'en'
+            }
+        }
     }
 }
 
@@ -68,4 +96,22 @@ function dice() {
 function flipcoin() {
     let rn = Math.floor(2 * Math.random()) + 1
     return (rn == 1) ? 'yazı' : 'tura'
+}
+
+async function whichDotaHero(callback) {
+    let heroesurl = "https://api.opendota.com/api/heroes";
+
+    var selectedHero = await fetch(heroesurl, {
+            method: 'Get'
+        })
+        .then(res => res.json())
+        .then((json) => {
+            let herolist = []
+            for (const hero of json) {
+                herolist.push(hero['localized_name']);
+            }
+            return herolist[Math.floor(Math.random() * herolist.length)]
+        }).catch(console.error)
+
+    return selectedHero
 }

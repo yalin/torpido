@@ -122,10 +122,10 @@ class ConvertTo1ChannelStream extends Transform {
 }
 
 
-function sayIt(text) {
+function sayIt(text, accent) {
     var vConnection = voice.GetVoiceConnection(client, voiceChannel.id)
     if (vConnection) {
-        googleTTS(text, speechlang, cfg.consts.speechspeed)
+        googleTTS(text, (accent) ? accent : speechlang, cfg.consts.speechspeed)
             .then(function (url) {
                 ytdispatcher = vConnection.play(url, {
                     volume: _announceVolume
@@ -210,10 +210,15 @@ client.on('message', msg => {
                                             console.log(user.username + ' :\n', transcription);
 
                                             var botresponse = botspeech.botSpeechResponse(text = transcription, vc = vc, botnick = cfg.botnick)
-                                            if (botresponse) {
-                                                console.log("torpido :\n", botresponse);
-                                                sayIt(botresponse);
-                                            }
+                                            botresponse.then(res => {
+                                                if (res) {
+                                                    console.log("torpido :\n", res.response);
+                                                    sayIt(res.response, res.accent);
+                                                }
+                                            }).catch(err => {
+                                                sayIt('beceremedik abi', 'tr');
+                                            })
+
 
                                         })
 
