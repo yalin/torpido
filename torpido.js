@@ -164,6 +164,12 @@ client.on('message', msg => {
                     msg.reply(data)
                 });
                 break;
+            
+            case 'speak':
+                fs.readFile('speak.md', 'utf8', (err, data) => {
+                    msg.reply(data)
+                });
+                break;
 
             case 'speech':
                 var vc = msg.member.voice.channel;

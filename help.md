@@ -11,6 +11,7 @@
 !say {word(s)}   : talks on behalf of you
 !accent {langcode} : changes accent
 !img {keyword(s)}  : image search
-!caps {search keyword(s)} + {caps text} : extraordinary caps generator
+!caps {keyword(s)} + {caps text} : extraordinary caps generator
 !speech <on/off>    : toggle speech recognition
+!speak          : shows speech commands
 ```
