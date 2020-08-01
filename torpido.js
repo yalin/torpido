@@ -164,7 +164,7 @@ client.on('message', msg => {
                     msg.reply(data)
                 });
                 break;
-            
+
             case 'speak':
                 fs.readFile('speak.md', 'utf8', (err, data) => {
                     msg.reply(data)
@@ -186,57 +186,59 @@ client.on('message', msg => {
             case 'join':
                 voiceChannel.fetch().then(vc => {
                     vc.join().then(connection => {
-                            connection.on('speaking', (user, speaking) => {
-                                if (speechstatus == 0) {
-                                    return;
-                                } // added if speech is off, dont look at google speech
-                                if (speaking.bitfield == 1) {
-                                    var audioStream = connection.receiver.createStream(user, {
-                                        mode: 'pcm'
-                                    });
+                            if (cfg.consts.speechToText == 1) {
+                                connection.on('speaking', (user, speaking) => {
+                                    if (speechstatus == 0) {
+                                        return;
+                                    } // added if speech is off, dont look at google speech
+                                    if (speaking.bitfield == 1) {
+                                        var audioStream = connection.receiver.createStream(user, {
+                                            mode: 'pcm'
+                                        });
 
-                                    const requestConfig = {
-                                        encoding: 'LINEAR16',
-                                        sampleRateHertz: 48000,
-                                        languageCode: 'tr-TR'
-                                    }
-                                    const request = {
-                                        config: requestConfig
-                                    }
+                                        const requestConfig = {
+                                            encoding: 'LINEAR16',
+                                            sampleRateHertz: 48000,
+                                            languageCode: 'tr-TR'
+                                        }
+                                        const request = {
+                                            config: requestConfig
+                                        }
 
-                                    const recognizeStream = speechclient
-                                        .streamingRecognize(request)
-                                        .on('error', console.error)
-                                        .on('data', response => {
-                                            const transcription = response.results
-                                                .map(result => result.alternatives[0].transcript)
-                                                .join('\n')
-                                                .toLowerCase()
+                                        const recognizeStream = speechclient
+                                            .streamingRecognize(request)
+                                            .on('error', console.error)
+                                            .on('data', response => {
+                                                const transcription = response.results
+                                                    .map(result => result.alternatives[0].transcript)
+                                                    .join('\n')
+                                                    .toLowerCase()
 
-                                            console.log(user.username + ' :\n', transcription);
+                                                console.log(user.username + ' :\n', transcription);
 
-                                            var botresponse = botspeech.botSpeechResponse(text = transcription, vc = vc, botnick = cfg.botnick)
-                                            botresponse.then(res => {
-                                                if (res) {
-                                                    console.log("torpido :\n", res.response);
-                                                    sayIt(res.response, res.accent);
-                                                }
-                                            }).catch(err => {
-                                                sayIt('beceremedik abi', 'tr');
+                                                var botresponse = botspeech.botSpeechResponse(text = transcription, vc = vc, botnick = cfg.botnick)
+                                                botresponse.then(res => {
+                                                    if (res) {
+                                                        console.log("torpido :\n", res.response);
+                                                        sayIt(res.response, res.accent);
+                                                    }
+                                                }).catch(err => {
+                                                    sayIt('beceremedik abi', 'tr');
+                                                })
+
+
                                             })
 
-
+                                        const convertTo1ChannelStream = new ConvertTo1ChannelStream()
+                                        audioStream.pipe(convertTo1ChannelStream).pipe(recognizeStream)
+                                        audioStream.on('end', async () => {})
+                                        audioStream.on('error', (err) => {
+                                            msg.reply('bir hata oldu')
                                         })
 
-                                    const convertTo1ChannelStream = new ConvertTo1ChannelStream()
-                                    audioStream.pipe(convertTo1ChannelStream).pipe(recognizeStream)
-                                    audioStream.on('end', async () => {})
-                                    audioStream.on('error', (err) => {
-                                        msg.reply('bir hata oldu')
-                                    })
-
-                                }
-                            })
+                                    }
+                                })
+                            }
                         })
                         .catch(console.error);
                 })
