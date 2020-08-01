@@ -107,7 +107,8 @@ You need to create `config.json` file to compile.
         "speechlang" : "en",
         "speechspeed" : 1,
         "leaveafterplay" : false,
-        "msglang" : "en"
+        "msglang" : "en",
+        "speechToText" : 0
     }
 }
 ```
