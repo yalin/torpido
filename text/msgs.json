@@ -7,7 +7,8 @@
         "exitchannel" : " exit channel",
         "languagesetto" : "language set to: ",
         "nosuchlanguage" : "no such langauge: ",
-        "searchwhat" : "search wut?"
+        "searchwhat" : "search wut?",
+        "speechna" : "speech is not available"
     },
     "tr" : {
         "notinchannel": "önce bir kanala gir de...",
@@ -17,7 +18,8 @@
         "exitchannel" : " çıktı",
         "languagesetto" : "yeni dil: ",
         "nosuchlanguage" : "öyle bir dil yok: ",
-        "searchwhat" : "ne arayacam?"
+        "searchwhat" : "ne arayacam?",
+        "speechna" : "sesli komut aktif degil"
     }
 }
 

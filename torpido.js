@@ -166,6 +166,9 @@ client.on('message', msg => {
                 break;
 
             case 'speak':
+                if (cfg.consts.speechToText == 0) {
+                    return msg.reply(msgs.speechna)
+                }
                 fs.readFile('speak.md', 'utf8', (err, data) => {
                     msg.reply(data)
                 });
@@ -175,6 +178,9 @@ client.on('message', msg => {
                 var vc = msg.member.voice.channel;
                 if (!vc) {
                     return msg.reply(msgs.notinchannel);
+                }
+                if (cfg.consts.speechToText == 0) {
+                    return msg.reply(msgs.speechna)
                 }
                 if (!rest[0]) {
                     return msg.reply((speechstatus == 1) ? 'on' : 'off')
@@ -282,6 +288,10 @@ client.on('message', msg => {
                 if (rest[0].startsWith('https://www.you')) {
 
                     vc.join().then(connection => {
+
+                            if (ytdispatcher)
+                                ytdispatcher.destroy()
+
                             const stream = ytdl(rest[0], {
                                 filter: 'audioonly',
                             });
@@ -316,6 +326,10 @@ client.on('message', msg => {
                         msg.reply(ytUrl)
 
                         vc.join().then(connection => {
+
+                                if (ytdispatcher)
+                                    ytdispatcher.destroy()
+
                                 const stream = ytdl(ytUrl, {
                                     filter: 'audioonly',
                                 });
