@@ -112,3 +112,8 @@ You need to create `config.json` file to compile.
     }
 }
 ```
+
+## speech recognition
+you need to create dotenv files which includes Google API json file.
+
+_TODO : explain how speech recognition works_
