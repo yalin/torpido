@@ -61,6 +61,10 @@ function enteredChannel(username) {
     if (vConnection) {
         googleTTS(username + msgs.enteredchannel, speechlang, cfg.consts.speechspeed)
             .then(function (url) {
+
+                if (ytdispatcher)
+                    ytdispatcher.destroy()
+
                 ytdispatcher = vConnection.play(url, {
                     volume: _announceVolume
                 });
@@ -79,6 +83,10 @@ function exitChannel(username) {
     if (vConnection) {
         googleTTS(username + msgs.exitchannel, speechlang, cfg.consts.speechspeed)
             .then(function (url) {
+
+                if (ytdispatcher)
+                    ytdispatcher.destroy()
+
                 ytdispatcher = vConnection.play(url, {
                     volume: _announceVolume
                 });
@@ -417,6 +425,10 @@ client.on('message', msg => {
                 if (vConnection) {
                     googleTTS(rest.join(' '), speechlang, cfg.consts.speechspeed)
                         .then(function (url) {
+
+                            if (ytdispatcher)
+                                ytdispatcher.destroy()
+
                             ytdispatcher = vConnection.play(url, {
                                 volume: _announceVolume
                             });
