@@ -16,7 +16,7 @@
     "g-i-s": "^2.1.6",
     "google-tts-api": "0.0.4",
     "libsodium-wrappers": "^0.7.8",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^2.6.7",
     "node-opus": "^0.3.3",
     "sqlite3": "^5.0.0",
     "winston": "^3.3.3",
